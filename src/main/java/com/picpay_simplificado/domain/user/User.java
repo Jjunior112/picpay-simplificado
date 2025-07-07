@@ -1,5 +1,6 @@
 package com.picpay_simplificado.domain.user;
 
+import com.picpay_simplificado.Dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,5 +35,17 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
+    public User(UserDto user)
+    {
+        this.firstname = user.firstName();
+        this.lastName = user.lastName();
+        this.email = user.email();
+        this.document = user.document();
+        this.password = user.password();
+        this.balance = user.balance();
+        this.userType = user.userType();
+
+    }
 
 }

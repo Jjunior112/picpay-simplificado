@@ -17,22 +17,24 @@ import java.util.Map;
 
 public class TransactionService {
 
-    private RestTemplate restTemplate;
-    private UserService userService;
-    private TransactionRepository transactionRepository;
+    private final RestTemplate restTemplate;
+    private final UserService userService;
+    private final TransactionRepository transactionRepository;
 
-    public TransactionService(TransactionRepository transactionRepository,UserService userService,RestTemplate restTemplate)
+    private final NotificationService notificationService;
+
+    public TransactionService(TransactionRepository transactionRepository,UserService userService,RestTemplate restTemplate,NotificationService notificationService)
     {
         this.transactionRepository=transactionRepository;
         this.userService = userService;
         this.restTemplate = restTemplate;
+        this.notificationService = notificationService;
     }
-
-    public void createTransaction(TransactionDto transaction) throws Exception {
+    public Transaction createTransaction(TransactionDto transaction) throws Exception {
 
         User sender = this.userService.findUserById(transaction.senderId());
 
-        User receiver = this.userService.findUserById((transaction.receiverID()));
+        User receiver = this.userService.findUserById((transaction.receiverId()));
 
         userService.validateTransaction(sender,transaction.value());
 
@@ -40,7 +42,7 @@ public class TransactionService {
 
         if(!isAuthorized)
         {
-            throw  new Exception("Transação não autorizada");
+            throw new Exception("Transação não autorizada");
         }
 
         Transaction newTransaction = new Transaction();
@@ -62,6 +64,11 @@ public class TransactionService {
 
         this.userService.saveUser(receiver);
 
+        this.notificationService.sendNotification(sender,"Transação realizada com sucesso!");
+
+        this.notificationService.sendNotification(receiver,"Transação recebida com sucesso!");
+
+        return newTransaction;
     }
 
     public boolean authorizeTransaction(User sender, BigDecimal value)
@@ -72,20 +79,16 @@ public class TransactionService {
             );
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                Object data = response.getBody().get("status");
 
-                Object authValue = response.getBody().get("authorization");
-
-                if (authValue instanceof Boolean) {
-                    return (Boolean) authValue;
-                }
+                return "success".equalsIgnoreCase(data.toString());
             }
         } catch (Exception e) {
-
-            System.err.println("Erro na autorização: " + e.getMessage());
+            System.err.println(e);
+            return false;
         }
 
         return false;
-
     }
 
 

@@ -1,11 +1,13 @@
 package com.picpay_simplificado.services;
 
+import com.picpay_simplificado.Dto.UserDto;
 import com.picpay_simplificado.domain.user.User;
 import com.picpay_simplificado.domain.user.UserType;
 import com.picpay_simplificado.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -14,6 +16,21 @@ public class UserService {
     public UserService(UserRepository userRepository)
     {
         this.userRepository = userRepository;
+    }
+
+    public User createUSer(UserDto user)
+    {
+        User newUser = new User(user);
+
+        this.saveUser(newUser);
+
+        return newUser;
+
+    }
+
+    public List<User> findAllUsers()
+    {
+        return userRepository.findAll();
     }
 
     public void validateTransaction(User sender, BigDecimal amount) throws Exception {
