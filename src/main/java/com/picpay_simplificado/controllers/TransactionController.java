@@ -39,8 +39,8 @@ public class TransactionController {
         return new ResponseEntity<>(transactions,HttpStatus.OK);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<Optional<Transaction>> getById(@RequestParam Long id)
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<Transaction>> getById(@PathVariable Long id)
     {
         Optional<Transaction> transaction = transactionService.findTransactionById(id);
 
