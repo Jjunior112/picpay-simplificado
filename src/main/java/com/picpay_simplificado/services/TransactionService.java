@@ -5,6 +5,7 @@ import com.picpay_simplificado.Dto.TransactionDto;
 import com.picpay_simplificado.domain.transaction.Transaction;
 import com.picpay_simplificado.domain.user.User;
 import com.picpay_simplificado.repositories.TransactionRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +20,8 @@ import java.util.Optional;
 
 public class TransactionService {
 
+    @Value("${external.api.authorization.url}")
+    private String authorizationUrl;
     private final RestTemplate restTemplate;
     private final UserService userService;
     private final TransactionRepository transactionRepository;
@@ -88,7 +91,7 @@ public class TransactionService {
     {
         try {
             ResponseEntity<Map> response = restTemplate.getForEntity(
-                    "https://util.devi.tools/api/v2/authorize", Map.class
+                    authorizationUrl, Map.class
             );
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {

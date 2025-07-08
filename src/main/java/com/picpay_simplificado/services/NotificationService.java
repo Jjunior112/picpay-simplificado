@@ -2,6 +2,7 @@ package com.picpay_simplificado.services;
 
 import com.picpay_simplificado.Dto.NotificationDto;
 import com.picpay_simplificado.domain.user.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,10 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class NotificationService {
+    @Value("${external.api.notification.url}")
+    private String notificationUrl;
     private RestTemplate restTemplate;
+
 
     public NotificationService(RestTemplate restTemplate)
     {
@@ -23,7 +27,7 @@ public class NotificationService {
 
         try {
             ResponseEntity<Void> response = restTemplate.postForEntity(
-                    "https://util.devi.tools/api/v1/notify",
+                    notificationUrl,
                     notificationRequest,
                     Void.class
             );
