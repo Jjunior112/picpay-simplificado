@@ -11,7 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 
@@ -70,6 +72,17 @@ public class TransactionService {
 
         return newTransaction;
     }
+
+    public List<Transaction> findAllTransactions()
+    {
+        return transactionRepository.findAll();
+    }
+
+    public Optional<Transaction> findTransactionById(Long id)
+    {
+       return transactionRepository.findById(id);
+    }
+
 
     public boolean authorizeTransaction(User sender, BigDecimal value)
     {
